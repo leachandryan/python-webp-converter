@@ -72,3 +72,56 @@ def check_and_install_dependencies():
     except subprocess.CalledProcessError as e:
         print(f"Error during installation: {e}")
         return False
+    
+def main():
+    # Check and install dependencies
+    if not check_and_install_dependencies():
+        print("Required dependency cwebp could not be installed. Exiting.")
+        sys.exit(1)
+    
+    # Default parameters
+    params = ['-m', '6', '-q', '70', '-mt', '-af', '-progress']
+    
+    # Use command line arguments if provided
+    if len(sys.argv) > 1:
+        params = sys.argv[1:]
+    
+    # Change to current working directory
+    os.chdir(os.getcwd())
+    
+    # Find all image files
+    img_extensions = ['*.jpeg', '*.jpg', '*.png', '*.tiff', '*.tif', '*.bmp']
+    img_files = []
+    for ext in img_extensions:
+        img_files.extend(glob.glob(f"**/{ext}", recursive=True))
+    
+    # Find all GIF files
+    gif_files = glob.glob("**/*.gif", recursive=True)
+    
+    total_img = len(img_files)
+    total_gif = len(gif_files)
+    
+    print(f"There are {total_img} image files and {total_gif} GIF files to be converted.")
+    
+    # Convert image files
+    for idx, img in enumerate(img_files, 1):
+        print(f"Converting {img}, {idx}/{total_img}")
+        output_file = f"{os.path.splitext(img)[0]}.webp"
+        
+        # Create directory if it doesn't exist
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        
+        # Construct cwebp command
+        cmd = ['cwebp'] + params + [img, '-o', output_file]
+        
+        # Run conversion
+        try:
+            subprocess.run(cmd, check=True)
+            success = "✓"
+        except subprocess.CalledProcessError:
+            print(f"Error converting {img}")
+            success = "×"
+        
+        # Print progress with green color
+        print(f"\033[0;32m {success} {idx} out of {total_img} images converted \033[0m")
+        print(f"\033[0;32m {0} out of {total_gif} GIFs converted \033[0m")
