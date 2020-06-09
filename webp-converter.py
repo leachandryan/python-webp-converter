@@ -72,7 +72,7 @@ def check_and_install_dependencies():
     except subprocess.CalledProcessError as e:
         print(f"Error during installation: {e}")
         return False
-    
+
 def main():
     # Check and install dependencies
     if not check_and_install_dependencies():
@@ -125,3 +125,28 @@ def main():
         # Print progress with green color
         print(f"\033[0;32m {success} {idx} out of {total_img} images converted \033[0m")
         print(f"\033[0;32m {0} out of {total_gif} GIFs converted \033[0m")
+    
+    # Convert GIF files
+    for idx, gif in enumerate(gif_files, 1):
+        print(f"Converting {gif}, {idx}/{total_gif}")
+        output_file = f"{os.path.splitext(gif)[0]}.webp"
+        
+        # Create directory if it doesn't exist
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        
+        # Construct cwebp command
+        cmd = ['cwebp'] + params + [gif, '-o', output_file]
+        
+        # Run conversion
+        try:
+            subprocess.run(cmd, check=True)
+            success = "✓"
+        except subprocess.CalledProcessError:
+            print(f"Error converting {gif}")
+            success = "×"
+        
+        # Print progress with green color
+        print(f"\033[0;32m {success} {idx} out of {total_gif} GIFs converted \033[0m")
+
+if __name__ == "__main__":
+    main()
