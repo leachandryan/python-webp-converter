@@ -109,7 +109,9 @@ def main():
         output_file = f"{os.path.splitext(img)[0]}.webp"
         
         # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        output_dir = os.path.dirname(output_file)
+        if output_dir:  # Only try to create directory if there's actually a directory path
+            os.makedirs(output_dir, exist_ok=True)
         
         # Construct cwebp command
         cmd = ['cwebp'] + params + [img, '-o', output_file]
@@ -132,7 +134,9 @@ def main():
         output_file = f"{os.path.splitext(gif)[0]}.webp"
         
         # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        output_dir = os.path.dirname(output_file)
+        if output_dir:  # Only try to create directory if there's actually a directory path
+            os.makedirs(output_dir, exist_ok=True)
         
         # Construct cwebp command
         cmd = ['cwebp'] + params + [gif, '-o', output_file]
